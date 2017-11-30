@@ -17,15 +17,16 @@ def validateUser():
     password = request.form['password']
     verifyPassword = request.form['verifypassword']
     email = request.form['email']
-    error = 0
-    errorPasswordMatch = false
-    errorPasswordEmpty = false
-    errorUsernameEmpty = false
-    errorVerifyPasswordEmpty = false
-    errorUsernameInvalid = false
-    errorPasswordInvalid = false
-    errorEmailEmpty = false
-    errorEmailInvalid = false
+    error = {
+        'quantity': 0,
+        'passwordMatch': false,
+        'passwordEmpty': false,
+        'verifyPasswordEmpty': false,
+        'usernameInvalid': false,
+        'passwordInvalid': false,
+        'emailEmpty': false,
+        'emailInvalid': false
+    }
 
     # log those variables for debugging
     app.logger.info('%s username',username)
@@ -35,38 +36,38 @@ def validateUser():
 
     # validate that verify password & password are the same
     if password != verifypassword:
-        errorPasswordMatch = true
-        error+=1
+        error['passwordMatch'] = true
+        error['quantity']+=1
 
     # make sure password isn't empty
     if len(password) == 0:
-        errorPasswordEmpty = true
-        error+=1
+        error['passwordEmpty'] = true
+        error['quantity']+=1
 
     # make sure username isn't empty
     if len(username) == 0:
-        errorUsernameEmpty = true
-        error+=1
+        error['usernameEmpty'] = true
+        error['quantity']+=1
 
     # make sure password isn't empty
     if len(verifyPassword) == 0:
-        errorVerifyPasswordEmpty = true
-        error+=1
+        error['verifyPasswordEmpty'] = true
+        error['quantity']+=1
 
     # make sure username doesn't contain space
     if ' ' in username:
-        errorUsernameInvalid = true
-        error+=1
+        error['usernameInvalid'] = true
+        error['quantity']+=1
 
     # make sure space isn't in password
     if ' ' in password:
-        errorPasswordInvalid = true
-        error+=1
+        error['passwordInvalid'] = true
+        error['quantity']+=1
 
     #make sure email isn't empty
     if len(email) == 0:
-        errorEmailEmpty = true
-        error+=1
+        error['emailEmpty'] = true
+        error['quantity']+=1
 
     #make sure email contains the '@' character
     if '@' not in email:
@@ -74,9 +75,9 @@ def validateUser():
         error+=1
 
     if error > 0:
-        return render_template('welcome.html')
+        return render_template('welcome.html',username)
     else:
-        return render_template('index.html')
+        return render_template('index.html',error)
 
 if __name__ == '__main__':
     app.run(debug=True)
