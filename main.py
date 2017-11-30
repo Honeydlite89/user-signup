@@ -3,12 +3,9 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-form = '''
-'''
-
 @app.route("/", methods=['GET'])
 def index():
-    return render_template('index.html')
+    return render_template('main.html')
 
 @app.route("/", methods=['POST'])
 def validateUser():
@@ -19,13 +16,13 @@ def validateUser():
     email = request.form['email']
     error = {
         'quantity': 0,
-        'passwordMatch': false,
-        'passwordEmpty': false,
-        'verifyPasswordEmpty': false,
-        'usernameInvalid': false,
-        'passwordInvalid': false,
-        'emailEmpty': false,
-        'emailInvalid': false
+        'passwordMatch': False,
+        'passwordEmpty': False,
+        'verifyPasswordEmpty': False,
+        'usernameInvalid': False,
+        'passwordInvalid': False,
+        'emailEmpty': False,
+        'emailInvalid': False
     }
 
     # log those variables for debugging
@@ -35,49 +32,49 @@ def validateUser():
     app.logger.info('%s email',email)
 
     # validate that verify password & password are the same
-    if password != verifypassword:
-        error['passwordMatch'] = true
+    if password != verifyPassword:
+        error['passwordMatch'] = True
         error['quantity']+=1
 
     # make sure password isn't empty
     if len(password) == 0:
-        error['passwordEmpty'] = true
+        error['passwordEmpty'] = True
         error['quantity']+=1
 
     # make sure username isn't empty
     if len(username) == 0:
-        error['usernameEmpty'] = true
+        error['usernameEmpty'] = True
         error['quantity']+=1
 
     # make sure password isn't empty
     if len(verifyPassword) == 0:
-        error['verifyPasswordEmpty'] = true
+        error['verifyPasswordEmpty'] = True
         error['quantity']+=1
 
     # make sure username doesn't contain space
     if ' ' in username:
-        error['usernameInvalid'] = true
+        error['usernameInvalid'] = True
         error['quantity']+=1
 
     # make sure space isn't in password
     if ' ' in password:
-        error['passwordInvalid'] = true
+        error['passwordInvalid'] = True
         error['quantity']+=1
 
     #make sure email isn't empty
     if len(email) == 0:
-        error['emailEmpty'] = true
+        error['emailEmpty'] = True
         error['quantity']+=1
 
     #make sure email contains the '@' character
     if '@' not in email:
-        errorEmailInvalid = true
-        error+=1
+        error['emailInvalid'] = True
+        error['quantity']+=1
 
-    if error > 0:
-        return render_template('welcome.html',username)
+    if error['quantity'] == 0:
+        return render_template('welcome.html',username=username,email=email)
     else:
-        return render_template('index.html',error)
+        return render_template('main.html',error=error,username=username,email=email)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

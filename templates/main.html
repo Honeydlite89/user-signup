@@ -1,21 +1,70 @@
 <!DOCTYPE html>
 <html>
+    <head>
+      <style>
+        span.error{
+          color: red;
+        }
+      </style>
+    </head>
     <body>
-        <h1>%s</h1>
-        <form action="" autocomplete"on">
+        <form action="/" method='POST' autocomplete"on">
             <fieldset>
                 <legend>Sign Up</legend>
                 Username:<br>
-                <input type="text" name="username">
+                <input
+                  type="text"
+                  name="username"
+                  {% if username is defined %}
+                    value="{{username}}"
+                  {% endif %}>
+                {%if error is defined %}
+                  {%if error.usernameEmpty == true %}
+                    <span class='error'>User name field is required</span>
+                  {% endif %}
+                  {%if error.usernameInvalid == true %}
+                    <span class='error'>Username must not contain spaces</span>
+                  {% endif %}
+                {% endif %}
                 <br>
                 Password:<br>
-                <input type="password" name="password" autocomplete"off">
+                <input
+                  type="password"
+                  name="password"
+                  autocomplete"off">
+                {%if error is defined %}
+                  {%if error.passwordEmpty == true %}
+                    <span class='error'>Password field is required</span>
+                  {% endif %}
+                  {%if error.passwordMatch == true %}
+                    <span class='error'>Passwords don't match</span>
+                  {% endif %}
+                  {%if error.passwordInvalid == true %}
+                    <span class='error'>Password must not contain spaces</span>
+                  {% endif %}
+                {% endif %}
                 <br>
                 Verify Password:<br>
                 <input type="text" name="verifypassword" autocomplete"off">
+                {%if error is defined and error.verifyPasswordEmpty == true %}
+                  <span class='error'>Verify password field is required</span>
+                {% endif %}
                 <br>
                 Email(optional):<br>
-                <input type="text" name="email">
+                <input
+                  type="text"
+                  name="email"
+                  {% if email is defined %}
+                    value="{{email}}"
+                  {% endif %}>
+                {%if error is defined %}
+                  {%if error.emailEmpty == true %}
+                    <span class='error'>Email field is required</span>
+                  {% endif %}
+                  {%if error.emailInvalid == true %}
+                    <span class='error'>Email invalid, requires an '@'</span>
+                  {% endif %}
+                {% endif %}
                 <br><br>
                 <input type="submit">
             </fieldset>
