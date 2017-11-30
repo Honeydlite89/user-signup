@@ -1,38 +1,11 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-form = '''
-<!DOCTYPE html>
-<html>
-    <body>
-        <h1>%s</h1>
-        <form action="" autocomplete"on">
-            <fieldset>
-                <legend>Sign Up</legend>
-                Username:<br>
-                <input type="text" name="username">
-                <br>
-                Password:<br>
-                <input type="password" name="password" autocomplete"off">
-                <br>
-                Verify Password:<br>
-                <input type="text" name="verifypassword" autocomplete"off">
-                <br>
-                Email(optional):<br>
-                <input type="text" name="email">
-                <br><br>
-                <input type="submit">
-            </fieldset>
-        </form>
-    </body>
-</html>
-'''
-
 @app.route("/", methods=['GET'])
 def index():
-    return form % ''
+    return render_template('main.html')
 
 @app.route("/", methods=['POST'])
 def validateUser():
@@ -41,7 +14,16 @@ def validateUser():
     password = request.form['password']
     verifyPassword = request.form['verifypassword']
     email = request.form['email']
-    failureMessage = ''
+    error = {
+        'quantity': 0,
+        'passwordMatch': False,
+        'passwordEmpty': False,
+        'verifyPasswordEmpty': False,
+        'usernameInvalid': False,
+        'passwordInvalid': False,
+        'emailEmpty': False,
+        'emailInvalid': False
+    }
 
     # log those variables for debugging
     app.logger.info('%s username',username)
@@ -50,18 +32,49 @@ def validateUser():
     app.logger.info('%s email',email)
 
     # validate that verify password & password are the same
-    if str(password) == str(verifypassword):
-        return '<h1>Welcome %s</h1>' % username
-    else:
-        return form % failureMessage
-    #TODO megan do conditional statements here and alter
-    # the filureMessage if something is wrong, if the failure
-    #message is empty then return success; otherwise, send
-    #them back to the page with the failuremessage on the form
-    if len(failureMessage):
-      return form % failureMessage
-    else:
-      return '<h1>Welcome %s</h1>' % username
+    if password != verifyPassword:
+        error['passwordMatch'] = True
+        error['quantity']+=1
 
+    # make sure password isn't empty
+    if len(password) == 0:
+        error['passwordEmpty'] = True
+        error['quantity']+=1
+
+    # make sure username isn't empty
+    if len(username) == 0:
+        error['usernameEmpty'] = True
+        error['quantity']+=1
+
+    # make sure password isn't empty
+    if len(verifyPassword) == 0:
+        error['verifyPasswordEmpty'] = True
+        error['quantity']+=1
+
+    # make sure username doesn't contain space
+    if ' ' in username:
+        error['usernameInvalid'] = True
+        error['quantity']+=1
+
+    # make sure space isn't in password
+    if ' ' in password:
+        error['passwordInvalid'] = True
+        error['quantity']+=1
+
+    #make sure email isn't empty
+    if len(email) == 0:
+        error['emailEmpty'] = True
+        error['quantity']+=1
+
+    #make sure email contains the '@' character
+    if '@' not in email:
+        error['emailInvalid'] = True
+        error['quantity']+=1
+
+    if error['quantity'] == 0:
+        return render_template('welcome.html',username=username,email=email)
+    else:
+        return render_template('main.html',error=error,username=username,email=email)
+
+if __name__ == '__main__':
     app.run()
-
