@@ -57,13 +57,11 @@
                   {% if email is defined %}
                     value="{{email}}"
                   {% endif %}>
-                {%if error is defined %}
-                  {%if error.emailEmpty == true %}
-                    <span class='error'>Email field is required</span>
-                  {% endif %}
-                  {%if error.emailInvalid == true %}
-                    <span class='error'>Email invalid, requires an '@'</span>
-                  {% endif %}
+                {%if error is defined and error.emailInvalid == true %}
+                  <span class='error'>
+                    Email invalid, requires an '@' and '.', cannot have spaces
+                    and must be between 3 and 20 characters in length.
+                  </span>
                 {% endif %}
                 <br><br>
                 <input type="submit">

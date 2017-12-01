@@ -21,7 +21,6 @@ def validateUser():
         'verifyPasswordEmpty': False,
         'usernameInvalid': False,
         'passwordInvalid': False,
-        'emailEmpty': False,
         'emailInvalid': False
     }
 
@@ -61,13 +60,8 @@ def validateUser():
         error['passwordInvalid'] = True
         error['quantity']+=1
 
-    #make sure email isn't empty
-    if len(email) == 0:
-        error['emailEmpty'] = True
-        error['quantity']+=1
-
     #make sure email contains the '@' character
-    if '@' not in email:
+    if '@' not in email or '.' not in email or len(email) < 3 or len(email)>20 or ' ' in email:
         error['emailInvalid'] = True
         error['quantity']+=1
 
